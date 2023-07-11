@@ -2,70 +2,104 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateArticle } from '../redux/actions/articleActions';
 import { useNavigate, useParams } from 'react-router-dom';
+import { TextField, Button, Typography } from '@mui/material';
+import Container from '@mui/material/Container';
 
 const ArticleEdit = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
-  const article = useSelector(state => state.find(article => article.id === parseInt(id)));
+  const foundArticle = useSelector(state => state.find(article => article.id === parseInt(id)));
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [author, setAuthor] = useState('');
-  const [tags, setTags] = useState('');
+  const [article, setArticle] = useState({
+    title: '',
+    description: '',
+    author: '',
+    tags: ''
+  });
+
+  const handleArticleChange = useCallback((e) => {
+    setArticle({
+      ...article,
+      [e.target.name]: e.target.value
+    });
+  }, [article]);
 
   useEffect(() => {
-    if (article) {
-      setTitle(article.title);
-      setDescription(article.description);
-      setAuthor(article.author);
-      setTags(article.tags.join(', '));
+    if (foundArticle) {
+      setArticle({
+        title: foundArticle.title,
+        description: foundArticle.description,
+        author: foundArticle.author,
+        tags: foundArticle.tags.join(', ')
+      });
     }
-  }, [article]);
+  }, [foundArticle]);
 
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
 
     const updatedInfo = {
-      title,
-      description,
-      author,
-      tags: tags.split(',').map(tag => tag.trim())
+      ...article,
+      tags: article.tags.split(',').map(tag => tag.trim())
     };
 
     dispatch(updateArticle(parseInt(id), updatedInfo));
     navigate('/');
-  }, [title, description, author, tags]);
+  }, [article]);
 
-  return article ? (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-        required
-      />
-      <textarea
-        value={description}
-        onChange={e => setDescription(e.target.value)}
-        required
-      />
-      <input
-        type="text"
-        value={author}
-        onChange={e => setAuthor(e.target.value)}
-        required
-      />
-      <input
-        type="text"
-        value={tags}
-        onChange={e => setTags(e.target.value)}
-        required
-      />
-      <button type="submit">Update</button>
-    </form>
+  return foundArticle ? (
+    <Container maxWidth="sm">
+      <form onSubmit={handleSubmit}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          margin="normal"
+          name="title"
+          label="Title"
+          value={article.title}
+          onChange={handleArticleChange}
+          required
+        />
+        <TextField
+          fullWidth
+          multiline
+          rows={4}
+          variant="outlined"
+          margin="normal"
+          name="description"
+          label="Description"
+          value={article.description}
+          onChange={handleArticleChange}
+          required
+        />
+        <TextField
+          fullWidth
+          variant="outlined"
+          margin="normal"
+          name="author"
+          label="Author"
+          value={article.author}
+          onChange={handleArticleChange}
+          required
+        />
+        <TextField
+          fullWidth
+          variant="outlined"
+          margin="normal"
+          name="tags"
+          label="Tags"
+          value={article.tags}
+          onChange={handleArticleChange}
+          required
+        />
+        <Button variant="contained" color="primary" type="submit">Update</Button>
+      </form>
+    </Container>
   ) : (
-    <p>Not found article</p>
+    <Typography variant="h6" color="textSecondary" align="center">
+      Article not found
+    </Typography>
   );
 };
 

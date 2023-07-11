@@ -2,66 +2,91 @@ import React, { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { createArticle } from '../redux/actions/articleActions';
 import { useNavigate, useParams } from 'react-router-dom';
+import { TextField, Button, Typography } from '@mui/material';
+import Container from '@mui/material/Container';
+
 
 const ArticleCreate = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [author, setAuthor] = useState('');
-  const [tags, setTags] = useState('');
+  const [article, setArticle] = useState({
+    id: Date.now(),
+    title: '',
+    description: '',
+    author: '',
+    tags: ''
+  });
+
+  const handleArticleChange = useCallback((e) => {
+    setArticle({
+      ...article,
+      [e.target.name]: e.target.value
+    });
+  }, [article]);
 
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
 
     const newArticle = {
-      id: Date.now(),
-      title,
-      description,
-      author,
-      tags: tags.split(',').map(tag => tag.trim())
+      ...article,
+      tags: article.tags.split(',').map(tag => tag.trim())
     };
 
     dispatch(createArticle(newArticle));
-
-    setTitle('');
-    setDescription('');
-    setAuthor('');
-    setTags('');
     navigate('/');
-  }, [title, description, author, tags]);
+  }, [article]);
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-        placeholder="Title"
-        required
-      />
-      <textarea
-        value={description}
-        onChange={e => setDescription(e.target.value)}
-        placeholder="Description"
-        required
-      />
-      <input
-        type="text"
-        value={author}
-        onChange={e => setAuthor(e.target.value)}
-        placeholder="Author"
-        required
-      />
-      <input
-        type="text"
-        value={tags}
-        onChange={e => setTags(e.target.value)}
-        placeholder="Tags (separated by commas)"
-        required
-      />
-      <button type="submit">Create</button>
-    </form>
+
+<Container maxWidth="sm">
+      <form onSubmit={handleSubmit}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          margin="normal"
+          name="title"
+          label="Title"
+          value={article.title}
+          onChange={handleArticleChange}
+          required
+        />
+        <TextField
+          fullWidth
+          multiline
+          rows={4}
+          variant="outlined"
+          margin="normal"
+          name="description"
+          label="Description"
+          value={article.description}
+          onChange={handleArticleChange}
+          required
+        />
+        <TextField
+          fullWidth
+          variant="outlined"
+          margin="normal"
+          name="author"
+          label="Author"
+          value={article.author}
+          onChange={handleArticleChange}
+          required
+        />
+        <TextField
+          fullWidth
+          variant="outlined"
+          margin="normal"
+          name="tags"
+          label="Tags"
+          value={article.tags}
+          onChange={handleArticleChange}
+          required
+        />
+        <Button variant="contained" color="primary" type="submit">Create</Button>
+      </form>
+    </Container>
+
+   
   );
 };
 
