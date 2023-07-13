@@ -13,9 +13,8 @@ const Article = ({ article }) => {
   return (
     <div>
       <h2>{article.title}</h2>
-      <p>{article.description}</p>
-      <p>By: {article.author}</p>
-      <p>Tags: {article.tags.join(', ')}</p>
+      <p>{article.body}</p>
+      <p>By User №: {article.userId}</p>
       <Link to={`/edit/${article.id}`}>Edit</Link>
       <button onClick={handleDelete}>Delete</button>
     </div>

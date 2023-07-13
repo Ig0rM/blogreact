@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateArticle } from '../redux/actions/articleActions';
+import { updateArticle, fetchArticles } from '../redux/actions/articleActions';
 import { useNavigate, useParams } from 'react-router-dom';
 import { TextField, Button, Typography } from '@mui/material';
 import Container from '@mui/material/Container';
@@ -9,13 +9,14 @@ const ArticleEdit = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
-  const foundArticle = useSelector(state => state.find(article => article.id === parseInt(id)));
+  const foundArticle = useSelector(state => { 
+    return state.find(article => article.id === parseInt(id))
+  });
 
   const [article, setArticle] = useState({
     title: '',
-    description: '',
-    author: '',
-    tags: ''
+    body: '',
+    userId: ''
   });
 
   const handleArticleChange = useCallback((e) => {
@@ -26,22 +27,21 @@ const ArticleEdit = () => {
   }, [article]);
 
   useEffect(() => {
+    dispatch(fetchArticles());
     if (foundArticle) {
       setArticle({
         title: foundArticle.title,
-        description: foundArticle.description,
-        author: foundArticle.author,
-        tags: foundArticle.tags.join(', ')
+        body: foundArticle.body,
+        userId: foundArticle.userId,
       });
     }
-  }, [foundArticle]);
+  }, [foundArticle, dispatch]);
 
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
 
     const updatedInfo = {
-      ...article,
-      tags: article.tags.split(',').map(tag => tag.trim())
+      ...article
     };
 
     dispatch(updateArticle(parseInt(id), updatedInfo));
@@ -67,9 +67,9 @@ const ArticleEdit = () => {
           rows={4}
           variant="outlined"
           margin="normal"
-          name="description"
+          name="body"
           label="Description"
-          value={article.description}
+          value={article.body}
           onChange={handleArticleChange}
           required
         />
@@ -77,19 +77,9 @@ const ArticleEdit = () => {
           fullWidth
           variant="outlined"
           margin="normal"
-          name="author"
+          name="userId"
           label="Author"
-          value={article.author}
-          onChange={handleArticleChange}
-          required
-        />
-        <TextField
-          fullWidth
-          variant="outlined"
-          margin="normal"
-          name="tags"
-          label="Tags"
-          value={article.tags}
+          value={article.userId}
           onChange={handleArticleChange}
           required
         />

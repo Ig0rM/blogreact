@@ -1,10 +1,16 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { List, ListItem, ListItemText, Divider } from '@mui/material';
 import Article from './Article';
+import { fetchArticles } from '../redux/actions/articleActions';
 
 const ArticleList = () => {
+  const dispatch = useDispatch();
   const articles = useSelector(state => state);
+  
+  useEffect(() => {
+    dispatch(fetchArticles());
+  }, [dispatch]);
 
   return (
     <List>

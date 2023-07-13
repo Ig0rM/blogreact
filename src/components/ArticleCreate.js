@@ -12,9 +12,8 @@ const ArticleCreate = () => {
   const [article, setArticle] = useState({
     id: Date.now(),
     title: '',
-    description: '',
-    author: '',
-    tags: ''
+    body: '',
+    userId: ''
   });
 
   const handleArticleChange = useCallback((e) => {
@@ -28,8 +27,7 @@ const ArticleCreate = () => {
     e.preventDefault();
 
     const newArticle = {
-      ...article,
-      tags: article.tags.split(',').map(tag => tag.trim())
+      ...article
     };
 
     dispatch(createArticle(newArticle));
@@ -56,9 +54,9 @@ const ArticleCreate = () => {
           rows={4}
           variant="outlined"
           margin="normal"
-          name="description"
-          label="Description"
-          value={article.description}
+          name="body"
+          label="Body"
+          value={article.body}
           onChange={handleArticleChange}
           required
         />
@@ -66,19 +64,9 @@ const ArticleCreate = () => {
           fullWidth
           variant="outlined"
           margin="normal"
-          name="author"
+          name="userId"
           label="Author"
-          value={article.author}
-          onChange={handleArticleChange}
-          required
-        />
-        <TextField
-          fullWidth
-          variant="outlined"
-          margin="normal"
-          name="tags"
-          label="Tags"
-          value={article.tags}
+          value={article.userId}
           onChange={handleArticleChange}
           required
         />
